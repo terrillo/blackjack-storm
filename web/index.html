@@ -15,13 +15,14 @@
 				</fieldset>
 				<fieldset>
 					<legend>Player</legend>
+					<p>{{ get_total(hands.player) }}</p>
 					<div v-for="card in hands.player">{{ card }}</div>
 				</fieldset>
 			</div>
 			<div class="pv3">
-				<button v-if="state == 'player-turn'">HIT</button>
-				<button v-if="state == 'player-turn'">STAND</button>
-				<button v-if="state == 'new-game'" v-on:click="deal_cards()">NEW HAND</button>
+				<button v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</button>
+				<button v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</button>
+				<button v-if="state == 'new-game' || state == 'end-game'" v-on:click="deal_cards()">NEW HAND</button>
 			</div>
 		</div>
 
