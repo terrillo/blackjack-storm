@@ -18,31 +18,54 @@
 				<!-- /Sidebar -->
 
 				<!-- Gameboard -->
-				<div id="play-now" class="w-80 pa3 bg-black-20 flex flex-column">
-					<div class="h-50 w-100 flex">
-						<!-- Dealer Cards-->
-						<div class="w-70 h-100 flex pa3 items-center justify-end">
-							<div class="mr2" v-if="state !== 'new-game'">{{ get_total(hands.dealer, false) }}</div>
-							<div v-for="card in hands.dealer"><div v-html="template('card', card)"></div></div>
+				<div id="play-now" class="w-80 pa3 bg-black-50 flex flex-column justify-center">
+					<div class="w-100 pa3 flex justify-center flex-column">
+						<!-- Messaging -->
+						<div class="mb2 tc">
+							<p v-text="message" class="b white ph4 pv2 bg-black-10 dib"></p>
 						</div>
 
-						<!-- Messaging -->
-						<div class="w-30 h-100 pa3 bg-black-10">
-							<p v-text="message"></p>
+						<!-- Dealer Cards -->
+						<div class="flex items-center justify-center">
+							<div class="mr5 bg-white-10 white pa3 br3 b f3" v-if="state !== 'new-game' && get_total(hands.dealer, false) > 0">
+								{{ get_total(hands.dealer, false) }}
+							</div>
+							<div class="pl3" v-if="hands.dealer.length > 0" v-for="card in hands.dealer">
+								<div v-html="build_template('card', card)"></div>
+							</div>
+							<div v-if="hands.dealer.length == 0">
+								<div class="flex">
+									<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+									<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div class="h-50 w-100 flex">
-						<!--  Players Cards -->
-						<div class="w-70 h-100 flex pa3 items-center justify-end">
-							<div class="mr2" v-if="state !== 'new-game'">{{ get_total(hands.player) }}</div>
-							<div v-for="card in hands.player"><div v-html="template('card', card)"></div></div>
+
+					<div class="w-100 pa3 flex justify-center flex-column">
+						<!-- Players Cards -->
+						<div class="w-100 flex pa3 items-center justify-center">
+							<div class="mr5 bg-white-10 white pa3 br3 b f3" v-if="state !== 'new-game' && get_total(hands.player) > 0">
+								{{ get_total(hands.player) }}
+							</div>
+							<div class="pl3" v-if="hands.player.length > 0" v-for="card in hands.player">
+								<div v-html="build_template('card', card)"></div>
+							</div>
+							<div v-if="hands.player.length == 0">
+								<div class="flex">
+									<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+									<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+								</div>
+							</div>
 						</div>
 
-						<!-- Player Actions -->
-						<div class="w-30 h-100">
-							<div class="db mv2 bg-white black" v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</div>
-							<div class="db mv2 bg-white black" v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</div>
-							<div class="db mv2 bg-white black" v-if="state == 'new-game' || state == 'end-game'" v-on:click="deal_cards()">NEW HAND</div>
+						<!-- Player Action -->
+						<div class="mt2 tc">
+							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</div>
+							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</div>
+							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'new-game' || state == 'end-game'" v-on:click="deal_cards()">
+								NEW HAND
+							</div>
 						</div>
 					</div>
 				</div>

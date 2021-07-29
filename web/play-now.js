@@ -3,21 +3,33 @@
 // 3. player-turn
 // 4. end-game
 
+var default_interval = 500;
 var app = new Vue({
 	el: "#play-now",
 	data: {
-		message: "Hey You!",
+		delay_interval: 500,
+		message: "Welcome!",
 		state: "new-game",
 		deck: [],
 		hands: {
 			dealer: [],
 			player: [],
 		},
+		template: {
+			card: {
+				value: 0,
+				suit: 0,
+				flipped: false,
+			},
+		},
 	},
 	created: function () {
 		this.buld_deck();
 	},
 	watch: {
+		state: function () {
+			this.delay_interval = default_interval;
+		},
 		deck: function (old_value, new_value) {
 			var player_total = this.get_total(this.hands.player);
 			var dealer_total = this.get_total(this.hands.dealer);
@@ -70,15 +82,19 @@ var app = new Vue({
 
 			// Dealer
 			this.hands.dealer = [];
-			this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, true));
-			this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, false));
+			this.delay(() => {
+				this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, true));
+			});
+			this.delay(() => (this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, false))));
 
 			// Player
 			this.hands.player = [];
-			this.hands.player = this.hands.player.concat(this.pull_cards(2, true));
-
-			this.state = "player-turn";
-			this.message = "Your Move";
+			this.delay(() => (this.hands.player = this.hands.player.concat(this.pull_cards(1, true))));
+			this.delay(() => {
+				this.hands.player = this.hands.player.concat(this.pull_cards(1, true));
+				this.state = "player-turn";
+				this.message = "Your Move";
+			});
 		},
 		pull_cards: function (count, flipped) {
 			const drawn_cards = _.take(this.deck, count);
@@ -95,17 +111,27 @@ var app = new Vue({
 			this.dealer_move();
 		},
 		dealer_move: function () {
+			this.delay_interval = default_interval;
 			if (this.state !== "end-game") {
 				this.hands.dealer.map((card) => {
 					card.flipped = true;
 				});
-				while (this.get_total(this.hands.dealer) < 17) {
-					this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, true));
+
+				var total = this.get_total(this.hands.dealer);
+				for (var i = 0; i < 10; i++) {
+					setTimeout(() => {
+						total = this.get_total(this.hands.dealer);
+						if (total < 17 && total < 21) {
+							this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, true));
+							i++;
+						}
+					}, 200);
 				}
 				this.find_winner();
 			}
 		},
 		find_winner: function () {
+			this.state = "end-game";
 			var player_total = this.get_total(this.hands.player);
 			var dealer_total = this.get_total(this.hands.dealer);
 
@@ -126,7 +152,8 @@ var app = new Vue({
 		},
 		get_total(cards, not_flipped = true) {
 			var total_value = 0;
-			var have_ace = false;
+			var number_of_aces = 0;
+
 			cards.forEach((card) => {
 				if (!card.flipped && !not_flipped) {
 					return;
@@ -136,35 +163,48 @@ var app = new Vue({
 					total_value += 10;
 				} else {
 					if (card.value == "A") {
-						have_ace = true;
+						number_of_aces += 1;
 					} else {
 						total_value += Number(card.value);
 					}
 				}
 			});
 
-			if (have_ace) {
+			// For each Ace
+			for (var i = 0; i < number_of_aces; i++) {
 				if (total_value > 10) {
 					total_value += 1;
 				} else {
 					total_value += 11;
 				}
+
+				// More than one Ace
+				if (total_value > 21) {
+					total_value -= 10;
+				}
 			}
 
 			return total_value;
 		},
-		template(type, details) {
+		build_template(type, details) {
 			if (type == "card") {
 				var extras = "";
+				var val = details.value;
 				if (details.flipped) {
 					extras = "black";
+					val = details.value;
 				} else {
-					extras = "white";
+					extras = "playing-card--back";
+					val = "";
 				}
-				return `<div class="aspect-ratio--3x4 ph2 pt2 bg-white mr2 ${extras}" style="width: 100px">
-									<div>${details.value}</div>
+				return `<div class="slide-left ph2 pt2 bg-white mr2 ${extras} playing-card">
+									<div>${val}</div>
 								</div>`;
 			}
+		},
+		delay(fn) {
+			this.delay_interval += 300;
+			setTimeout(fn, this.delay_interval);
 		},
 	},
 });

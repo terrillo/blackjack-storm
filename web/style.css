@@ -1,3 +1,37 @@
 header {
 	height: 45px;
 }
+
+.playing-card {
+	width: 120px;
+	height: 168px;
+	border-radius: 10px;
+}
+
+.playing-card:not(.tpl) {
+	border: 3px solid #727272;
+}
+
+.playing-card--back {
+	background: yellow;
+}
+
+.slide-left {
+	-webkit-animation: slide-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+	animation: slide-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+	animation-delay: 0.2s;
+}
+
+@keyframes slide-left {
+	0% {
+		opacity: 0;
+		-webkit-transform: translateX(100px);
+		transform: translateX(100px);
+	}
+	100% {
+		opacity: 1;
+		-webkit-transform: translateX(0);
+		transform: translateX(0);
+		margin-left: -60px;
+	}
+}
