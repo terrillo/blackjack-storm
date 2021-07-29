@@ -4,9 +4,53 @@
 
 		<!-- CSS-->
 		<link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
+		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
-		<div id="app" class="mw6 center mv3 pa2 bg-black-10">
+		<div class="h-100 flex flex-column items-stretch">
+			<!-- Header -->
+			<header class="w-100"></header>
+			<!-- /Header -->
+
+			<div class="flex w-100 h-100 bg-black-10">
+				<!-- Sidebar -->
+				<div class="w-20 pa3"></div>
+				<!-- /Sidebar -->
+
+				<!-- Gameboard -->
+				<div id="play-now" class="w-80 pa3 bg-black-20 flex flex-column">
+					<div class="h-50 w-100 flex">
+						<!-- Dealer Cards-->
+						<div class="w-70 h-100 flex pa3 items-center justify-end">
+							<div class="mr2" v-if="state !== 'new-game'">{{ get_total(hands.dealer, false) }}</div>
+							<div v-for="card in hands.dealer"><div v-html="template('card', card)"></div></div>
+						</div>
+
+						<!-- Messaging -->
+						<div class="w-30 h-100 pa3 bg-black-10">
+							<p v-text="message"></p>
+						</div>
+					</div>
+					<div class="h-50 w-100 flex">
+						<!--  Players Cards -->
+						<div class="w-70 h-100 flex pa3 items-center justify-end">
+							<div class="mr2" v-if="state !== 'new-game'">{{ get_total(hands.player) }}</div>
+							<div v-for="card in hands.player"><div v-html="template('card', card)"></div></div>
+						</div>
+
+						<!-- Player Actions -->
+						<div class="w-30 h-100">
+							<div class="db mv2 bg-white black" v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</div>
+							<div class="db mv2 bg-white black" v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</div>
+							<div class="db mv2 bg-white black" v-if="state == 'new-game' || state == 'end-game'" v-on:click="deal_cards()">NEW HAND</div>
+						</div>
+					</div>
+				</div>
+				<!-- /Gameboard -->
+			</div>
+		</div>
+
+		<div hidden class="mw6 center mv3 pa2">
 			<p v-text="message"></p>
 			<div v-if="state !== 'new-game'">
 				<fieldset>
@@ -29,6 +73,6 @@
 		<!-- JS -->
 		<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-		<script src="mvp.js"></script>
+		<script src="play-now.js"></script>
 	</body>
 </html>

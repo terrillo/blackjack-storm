@@ -4,7 +4,7 @@
 // 4. end-game
 
 var app = new Vue({
-	el: "#app",
+	el: "#play-now",
 	data: {
 		message: "Hey You!",
 		state: "new-game",
@@ -33,14 +33,14 @@ var app = new Vue({
 			}
 
 			if (player_total == 21) {
-				this.message = "Player has Blackjack!";
+				this.message = "Player has 21!";
 			}
 
 			if (dealer_total == 21) {
-				this.hands.delear.map((card) => {
+				this.hands.dealer.map((card) => {
 					card.flipped = true;
 				});
-				this.message = "Dealer has Blackjack!";
+				this.message = "Dealer has 21!";
 			}
 		},
 	},
@@ -124,11 +124,14 @@ var app = new Vue({
 				return;
 			}
 		},
-		get_total(cards) {
+		get_total(cards, not_flipped = true) {
 			var total_value = 0;
 			var have_ace = false;
-
 			cards.forEach((card) => {
+				if (!card.flipped && !not_flipped) {
+					return;
+				}
+
 				if (card.value == "J" || card.value == "Q" || card.value == "K") {
 					total_value += 10;
 				} else {
@@ -149,6 +152,19 @@ var app = new Vue({
 			}
 
 			return total_value;
+		},
+		template(type, details) {
+			if (type == "card") {
+				var extras = "";
+				if (details.flipped) {
+					extras = "black";
+				} else {
+					extras = "white";
+				}
+				return `<div class="aspect-ratio--3x4 ph2 pt2 bg-white mr2 ${extras}" style="width: 100px">
+									<div>${details.value}</div>
+								</div>`;
+			}
 		},
 	},
 });
