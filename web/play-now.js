@@ -1,7 +1,7 @@
 // 1. new-game
 // 2. dealing
 // 3. player-turn
-// 4. end-game
+// 5. end-game
 
 var default_interval = 500;
 var app = new Vue({
@@ -11,6 +11,14 @@ var app = new Vue({
 		message: "Welcome!",
 		state: "new-game",
 		deck: [],
+		table: {
+			rewarded: false,
+			bet: 1,
+		},
+		player: {
+			chips: Number(localStorage.getItem("chips") == null ? 200 : localStorage.getItem("chips")),
+			demerits: Number(localStorage.getItem("demerits") == null ? 0 : localStorage.getItem("demerits")),
+		},
 		hands: {
 			dealer: [],
 			player: [],
@@ -25,8 +33,15 @@ var app = new Vue({
 	},
 	created: function () {
 		this.buld_deck();
+		localStorage.setItem("chips", this.player.chips);
 	},
 	watch: {
+		"player.chips": function () {
+			localStorage.setItem("chips", this.player.chips);
+		},
+		"player.demerits": function () {
+			localStorage.setItem("demerits", this.player.demerits);
+		},
 		state: function () {
 			this.delay_interval = default_interval;
 		},
@@ -42,10 +57,12 @@ var app = new Vue({
 			if (dealer_total > 21) {
 				this.message = "Dealer BUST!";
 				this.state = "end-game";
+				this.transaction("+", 2);
 			}
 
 			if (player_total == 21) {
 				this.message = "Player has 21!";
+				this.transaction("+", 4);
 			}
 
 			if (dealer_total == 21) {
@@ -76,10 +93,6 @@ var app = new Vue({
 			this.state = "dealing";
 			this.message = "Dealing cards";
 
-			// Return to Deck
-			this.deck = this.deck.concat(this.hands.dealer);
-			this.deck = this.deck.concat(this.hands.player);
-
 			// Dealer
 			this.hands.dealer = [];
 			this.delay(() => {
@@ -95,6 +108,9 @@ var app = new Vue({
 				this.state = "player-turn";
 				this.message = "Your Move";
 			});
+
+			// Take Bet
+			this.transaction("-");
 		},
 		pull_cards: function (count, flipped) {
 			const drawn_cards = _.take(this.deck, count);
@@ -128,7 +144,30 @@ var app = new Vue({
 					}, 200);
 				}
 				this.find_winner();
+				this.clean_up();
 			}
+		},
+		clean_up: function () {
+			// Player Need Chips
+			if (this.player.chips == 0) {
+				this.player.chips = 100;
+				this.player.demerits += 1;
+			}
+
+			if (this.table.bet > this.player.chips) {
+				this.table.bet = 1;
+			}
+
+			if (this.table.bet <= 0) {
+				this.table.bet = 1;
+			}
+
+			// Player Rewarded
+			this.table.rewarded = false;
+
+			// Return cards to Deck
+			this.deck = this.deck.concat(this.hands.dealer);
+			this.deck = this.deck.concat(this.hands.player);
 		},
 		find_winner: function () {
 			this.state = "end-game";
@@ -137,11 +176,13 @@ var app = new Vue({
 
 			if (player_total == dealer_total) {
 				this.message = "DRAW";
+				this.transaction("+", 1);
 				return;
 			}
 
 			if (player_total > dealer_total) {
 				this.message = "Player WINS";
+				this.transaction("+", 2);
 				return;
 			}
 
@@ -150,7 +191,7 @@ var app = new Vue({
 				return;
 			}
 		},
-		get_total(cards, not_flipped = true) {
+		get_total: function (cards, not_flipped = true) {
 			var total_value = 0;
 			var number_of_aces = 0;
 
@@ -186,7 +227,7 @@ var app = new Vue({
 
 			return total_value;
 		},
-		build_template(type, details) {
+		build_template: function (type, details) {
 			if (type == "card") {
 				var extras = "";
 				var val = details.value;
@@ -202,9 +243,32 @@ var app = new Vue({
 								</div>`;
 			}
 		},
-		delay(fn) {
+		delay: function (fn) {
 			this.delay_interval += 300;
 			setTimeout(fn, this.delay_interval);
+		},
+		transaction: function (type, multiply) {
+			if (!this.table.rewarded) {
+				if (type == "-") {
+					this.player.chips -= this.table.bet;
+				} else {
+					this.table.rewarded = true;
+					var payout = this.table.bet * multiply;
+					console.log(payout);
+					this.player.chips += payout;
+				}
+			}
+		},
+		bet_up: function (val) {
+			var new_value = this.table.bet + val;
+			if (new_value <= this.player.chips) {
+				this.table.bet += val;
+			}
+		},
+		bet_down: function (val) {
+			if (this.table.bet > 1) {
+				this.table.bet -= val;
+			}
 		},
 	},
 });
