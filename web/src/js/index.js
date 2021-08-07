@@ -7,7 +7,7 @@ var default_interval = 500;
 var app = new Vue({
 	el: "#play-now",
 	data: {
-		delay_interval: 500,
+		delay_interval: default_interval,
 		message: "Welcome!",
 		state: "new-game",
 		deck: [],
@@ -34,6 +34,7 @@ var app = new Vue({
 	created: function () {
 		this.buld_deck();
 		localStorage.setItem("chips", this.player.chips);
+		this.clean_up();
 	},
 	watch: {
 		"player.chips": function () {
@@ -78,15 +79,20 @@ var app = new Vue({
 			// Build Deck
 			var base_cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 			var base_suits = ["Clubs", "Diamonds", "Hearts", "Spades"];
-			base_cards.forEach((value) => {
-				base_suits.forEach((suit) => {
-					this.deck.push({
-						value,
-						suit,
-						flipped: true,
+
+			// 6 decks
+			for (var i = 0; i < 6; i++) {
+				base_cards.forEach((value) => {
+					base_suits.forEach((suit) => {
+						this.deck.push({
+							value,
+							suit,
+							flipped: true,
+						});
 					});
 				});
-			});
+			}
+
 			this.deck = _.shuffle(this.deck);
 		},
 		deal_cards: function () {
@@ -125,6 +131,20 @@ var app = new Vue({
 		},
 		action_stand: function () {
 			this.dealer_move();
+		},
+		action_payback: function () {
+			if (this.player.chips > 200 && this.player.demerits > 0) {
+				this.player.demerits -= 1;
+				this.player.chips -= 200;
+			}
+		},
+		action_doubledown: function () {
+			this.transaction("-");
+			this.table.bet *= 2;
+			this.action_hit();
+			setTimeout(() => {
+				this.dealer_move();
+			}, this.delay_interval);
 		},
 		dealer_move: function () {
 			this.delay_interval = default_interval;

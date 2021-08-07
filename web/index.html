@@ -23,6 +23,7 @@
 						<dt class="f6 b mt2">Current Bet</dt>
 						<dd class="ml0">{{ table.bet }}</dd>
 					</dl>
+					<button v-if="player.demerits > 0 && player.chips > 200" v-on:click="action_payback()">Pay Back Demerit 200 C</button>
 				</div>
 				<!-- /Sidebar -->
 
@@ -72,6 +73,7 @@
 						<div class="mt2 tc">
 							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</div>
 							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</div>
+							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_doubledown()">DOUBLE DOWN</div>
 
 							<div v-if="state == 'new-game' || state == 'end-game'">
 								<p>BET: {{ table.bet }}</p>
@@ -89,26 +91,6 @@
 					</div>
 				</div>
 				<!-- /Gameboard -->
-			</div>
-		</div>
-
-		<div hidden class="mw6 center mv3 pa2">
-			<p v-text="message"></p>
-			<div v-if="state !== 'new-game'">
-				<fieldset>
-					<legend>Dealer</legend>
-					<div v-for="card in hands.dealer">{{ card }}</div>
-				</fieldset>
-				<fieldset>
-					<legend>Player</legend>
-					<p>{{ get_total(hands.player) }}</p>
-					<div v-for="card in hands.player">{{ card }}</div>
-				</fieldset>
-			</div>
-			<div class="pv3">
-				<button v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</button>
-				<button v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</button>
-				<button v-if="state == 'new-game' || state == 'end-game'" v-on:click="deal_cards()">NEW HAND</button>
 			</div>
 		</div>
 
