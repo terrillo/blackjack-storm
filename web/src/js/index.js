@@ -247,22 +247,6 @@ var app = new Vue({
 
 			return total_value;
 		},
-		build_template: function (type, details) {
-			if (type == "card") {
-				var extras = "";
-				var val = details.value;
-				if (details.flipped) {
-					extras = "black";
-					val = details.value;
-				} else {
-					extras = "playing-card--back";
-					val = "";
-				}
-				return `<div class="slide-left ph2 pt2 bg-white mr2 ${extras} playing-card">
-									<div>${val}</div>
-								</div>`;
-			}
-		},
 		delay: function (fn) {
 			this.delay_interval += 300;
 			setTimeout(fn, this.delay_interval);

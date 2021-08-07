@@ -5,6 +5,11 @@
 		<!-- CSS-->
 		<link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
 		<link rel="stylesheet" href="style.css" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&display=swap" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="play-now" class="h-100 flex flex-column items-stretch">
@@ -28,7 +33,7 @@
 				<!-- /Sidebar -->
 
 				<!-- Gameboard -->
-				<div class="w-80 pa3 bg-black-50 flex flex-column justify-center">
+				<div class="w-80 pa3 theme-background flex flex-column justify-center">
 					<div class="w-100 pa3 flex justify-center flex-column">
 						<!-- Messaging -->
 						<div class="mb2 tc">
@@ -37,11 +42,11 @@
 
 						<!-- Dealer Cards -->
 						<div class="flex items-center justify-center">
-							<div class="mr5 bg-white-10 white pa3 br3 b f3" v-if="state !== 'new-game' && get_total(hands.dealer, false) > 0">
+							<div class="mr5 bb bw2 b--white white pa2 b f3" v-if="state !== 'new-game' && get_total(hands.dealer, false) > 0">
 								{{ get_total(hands.dealer, false) }}
 							</div>
 							<div class="pl3" v-if="hands.dealer.length > 0" v-for="card in hands.dealer">
-								<div v-html="build_template('card', card)"></div>
+								<c-card v-bind:details="card"></c-card>
 							</div>
 							<div v-if="hands.dealer.length == 0">
 								<div class="flex">
@@ -55,11 +60,11 @@
 					<div class="w-100 pa3 flex justify-center flex-column">
 						<!-- Players Cards -->
 						<div class="w-100 flex pa3 items-center justify-center">
-							<div class="mr5 bg-white-10 white pa3 br3 b f3" v-if="state !== 'new-game' && get_total(hands.player) > 0">
+							<div class="mr5 bb bw2 b--white white pa2 b f3" v-if="state !== 'new-game' && get_total(hands.player) > 0">
 								{{ get_total(hands.player) }}
 							</div>
 							<div class="pl3" v-if="hands.player.length > 0" v-for="card in hands.player">
-								<div v-html="build_template('card', card)"></div>
+								<c-card v-bind:details="card"></c-card>
 							</div>
 							<div v-if="hands.player.length == 0">
 								<div class="flex">
@@ -93,6 +98,18 @@
 				<!-- /Gameboard -->
 			</div>
 		</div>
+
+		<script id="template-card" type="x-template">
+			<div v-bind:class="['slide-left ph2 pt2 bg-white mr2 playing-card', extras]">
+				<div v-if="details.flipped">
+					<div class="playing-card--top-right">
+						<div>{{ val }}</div>
+						<img class="playing-card--suit-small" v-bind:src="['/dist/images/' + details.suit + '.png']" />
+					</div>
+					<img class="playing-card--suit-large" v-bind:src="['/dist/images/' + details.suit + '.png']" />
+				</div>
+			</div>
+		</script>
 
 		<!-- JS -->
 		<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>

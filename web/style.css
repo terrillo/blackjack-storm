@@ -1,19 +1,57 @@
+:root {
+	--theme-background: #2f3640;
+}
+
+.theme-background {
+	background: var(--theme-background);
+}
+
+/***
+Elements 
+**/
+body {
+	font-family: "Roboto", sans-serif;
+}
+
 header {
 	height: 45px;
 }
 
 .playing-card {
-	width: 120px;
+	width: 110px;
 	height: 168px;
-	border-radius: 10px;
+	padding: 10px;
+	border-radius: 6px;
+	font-size: 16px;
+	font-weight: bold;
 }
 
 .playing-card:not(.tpl) {
-	border: 3px solid #727272;
+	box-shadow: -1px 10px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
 .playing-card--back {
-	background: yellow;
+	background: #40739e;
+}
+
+.playing-card--top-right {
+	width: 25px;
+	text-align: center;
+	margin-left: -5px;
+}
+
+.playing-card--Hearts,
+.playing-card--Diamonds {
+	color: #ff6a6a;
+}
+
+.playing-card--Spades,
+.playing-card--Clubs {
+	color: #0a3d62;
+}
+
+.playing-card--suit-small {
+	width: 20px;
 }
 
 .slide-left {
