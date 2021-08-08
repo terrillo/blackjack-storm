@@ -4,6 +4,7 @@
 
 		<!-- CSS-->
 		<link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
+		<link rel="stylesheet" href="dist/vendor/remix/remixicon.css" />
 		<link rel="stylesheet" href="style.css" />
 
 		<!-- Fonts -->
@@ -12,32 +13,66 @@
 		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&display=swap" rel="stylesheet" />
 	</head>
 	<body>
-		<div id="play-now" class="h-100 flex flex-column items-stretch">
-			<!-- Header -->
-			<header class="w-100"></header>
-			<!-- /Header -->
-
-			<div class="flex w-100 h-100 bg-black-10">
+		<div id="play-now" class="theme-background h-100 flex flex-column items-stretch">
+			<div class="flex w-100 h-100">
 				<!-- Sidebar -->
-				<div class="w-20">
-					<dl class="lh-title pa3 mt0">
-						<dt class="f6 b">Chips</dt>
-						<dd class="ml0">{{ player.chips }}</dd>
-						<dt class="f6 b mt2">Demerits</dt>
-						<dd class="ml0">{{ player.demerits }}</dd>
-						<dt class="f6 b mt2">Current Bet</dt>
-						<dd class="ml0">{{ table.bet }}</dd>
-					</dl>
-					<button v-if="player.demerits > 0 && player.chips > 200" v-on:click="action_payback()">Pay Back Demerit 200 C</button>
+				<div class="sidebar flex flex-column pa3 ml3">
+					<div class="w-100 pt3">
+						<div class="bg-white ph2 pv3 br3 mb3">
+							<h3 class="pa0 ma0 mb1">Leaderboard</h3>
+							<ul class="list pl0 measure center ma0">
+								<li class="ph2 lh-copy pv1 f7 ba bl-0 bt-0 br-0 b--dotted b--black-30">
+									<div class="flex justify-between">
+										<span>Jane Doe</span>
+										<span>1<sup>st</sup></span>
+									</div>
+								</li>
+								<li class="ph2 lh-copy pv1 f7 ba bl-0 bt-0 br-0 b--dotted b--black-30">
+									<div class="flex justify-between">
+										<span>John Doe</span>
+										<span>2<sup>nd</sup></span>
+									</div>
+								</li>
+								<li class="ph2 br2 lh-copy pv1 bg-yellow black f7 ba bl-0 bt-0 br-0 b--dotted b--black-30">
+									<div class="flex justify-between">
+										<span>YOU</span>
+										<span>342</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="w-100">
+						<div class="bg-white ph2 pv3 br3">
+							<div class="br-pill bg-black-10 flex justify-between pv2 ph3 f7">
+								<span class="ttu">Chips</span>
+								<span class="b">{{ player.chips }} <i class="icon theme-color-coin ri-copper-coin-line"></i> </span>
+							</div>
+							<div class="br-pill mt2 bg-black-10 flex justify-between pv2 ph3 f7">
+								<span class="ttu">Demerits</span>
+								<span class="b">{{ player.demerits }} <i class="icon theme-color-demerit ri-scan-line"></i></span>
+							</div>
+							<!-- <dl class="lh-title pa3 mt0">
+								<dt class="f6 b">Chips</dt>
+								<dd class="ml0">{{ player.chips }}</dd>
+								<dt class="f6 b mt2">Demerits</dt>
+								<dd class="ml0">{{ player.demerits }}</dd>
+								<dt class="f6 b mt2">Current Bet</dt>
+								<dd class="ml0">{{ table.bet }}</dd>
+							</dl> -->
+							<label class="f7 ttu b mt3 mb2 db">Pay Back Demerit</label>
+							<button class="w-100" v-on:click="action_payback()">200 <i class="icon theme-color-coin ri-copper-coin-line"></i></button>
+						</div>
+					</div>
 				</div>
 				<!-- /Sidebar -->
 
 				<!-- Gameboard -->
-				<div class="w-80 pa3 theme-background flex flex-column justify-center">
+				<div class="w-100 pa3 flex flex-column">
 					<div class="w-100 pa3 flex justify-center flex-column">
 						<!-- Messaging -->
 						<div class="mb2 tc">
-							<p v-text="message" class="b white ph4 pv2 bg-black-10 dib"></p>
+							<span v-text="message" class="b white ph4 pv2 i f3 dib"></span>
 						</div>
 
 						<!-- Dealer Cards -->
@@ -81,15 +116,20 @@
 							<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_doubledown()">DOUBLE DOWN</div>
 
 							<div v-if="state == 'new-game' || state == 'end-game'">
-								<p>BET: {{ table.bet }}</p>
-								<div class="flex justify-center">
-									<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 100" v-on:click="bet_up(100)">+100</div>
-									<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 10" v-on:click="bet_up(10)">+10</div>
-									<div class="dib mv2 bg-white black ph3 pv2" v-on:click="bet_up(1)">+1</div>
-									<div class="dib mv2 bg-white black ph3 pv2" v-on:click="bet_down(1)">-1</div>
-									<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 10" v-on:click="bet_down(10)">-10</div>
-									<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 100" v-on:click="bet_down(100)">-100</div>
+								<div class="br2 bg-white-10 w-auto pa3 dib">
+									<div class="white">
+										<span>{{ table.bet }} <i class="icon theme-color-coin ri-copper-coin-line"></i></span>
+									</div>
+									<div class="flex justify-center">
+										<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 100" v-on:click="bet_up(100)">+100</div>
+										<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 10" v-on:click="bet_up(10)">+10</div>
+										<div class="dib mv2 bg-white black ph3 pv2" v-on:click="bet_up(1)">+1</div>
+										<div class="dib mv2 bg-white black ph3 pv2" v-on:click="bet_down(1)">-1</div>
+										<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 10" v-on:click="bet_down(10)">-10</div>
+										<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 100" v-on:click="bet_down(100)">-100</div>
+									</div>
 								</div>
+								<br clear="all" />
 								<div class="dib mv2 bg-white black ph3 pv2" v-on:click="deal_cards()">NEW HAND</div>
 							</div>
 						</div>

@@ -1,9 +1,19 @@
 :root {
 	--theme-background: #2f3640;
+	--theme-coin: #00a8ff;
+	--theme-demerit: #e84118;
 }
 
 .theme-background {
 	background: var(--theme-background);
+}
+
+.theme-color-coin {
+	color: var(--theme-coin);
+}
+
+.theme-color-demerit {
+	color: var(--theme-demerit);
 }
 
 /***
@@ -15,6 +25,10 @@ body {
 
 header {
 	height: 45px;
+}
+
+.sidebar {
+	width: 300px;
 }
 
 .playing-card {
