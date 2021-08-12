@@ -9,6 +9,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"eta": "^1.12.3",
 		"express": "^4.17.1",
 		"node-minify": "^3.6.0",
 		"node-watch": "^0.7.1"

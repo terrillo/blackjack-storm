@@ -1,0 +1,7 @@
+<%~ includeFile("./partials/header.eta") %>
+
+<body>
+	<h1>Welcome to Blackjack Storm</h1>
+</body>
+
+<%~ includeFile("./partials/footer.eta") %>

@@ -1,0 +1,16 @@
+<html>
+<head>
+	<title>Blackjack Storm</title>
+	
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&display=swap" rel="stylesheet" />
+
+	<!-- CSS-->
+	<link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
+	<link rel="stylesheet" href="/dist/vendor/remix/remixicon.css" />
+	<link rel="stylesheet" href="/dist/css/style.css" />
+
+</head>
+<body>
