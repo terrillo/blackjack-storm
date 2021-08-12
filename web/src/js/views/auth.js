@@ -1,6 +1,7 @@
 var viewAuth = new Vue({
 	el: "#view--auth",
 	data: {
+		username: "",
 		email: "",
 		password: "",
 		error: false,
@@ -35,6 +36,10 @@ var viewAuth = new Vue({
 				.then((userCredential) => {
 					this.info = userCredential.user;
 					this.modal(false);
+					var user = firebase.auth().currentUser;
+					user.updateProfile({
+						displayName: this.username,
+					});
 				})
 				.catch((error) => {
 					this.error = error.message;

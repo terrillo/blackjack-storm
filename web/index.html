@@ -27,6 +27,7 @@
 				<div class="bg-white w-100 mw6 center pa3 br3 mt3">
 					<div v-if="view == 'sign-up'">
 						<h1>Sign Up</h1>
+						<input v-model="username" type="text" placeholder="jane2021" />
 						<input v-model="email" type="email" placeholder="jane@gmail.com" />
 						<input v-model="password" type="password" />
 						<button v-on:click="sign_up()">Next</button>
@@ -51,23 +52,13 @@
 					<div class="w-100 pt3">
 						<div class="bg-white ph2 pv3 br3">
 							<h3 class="pa0 ma0 mb1">Leaderboard</h3>
-							<ul class="list pl0 measure center ma0">
-								<li class="ph2 lh-copy pv1 f7 ba bl-0 bt-0 br-0 b--dotted b--black-30">
+							<ul class="list pl0 measure center ma0" v-for="leader in leaderboard">
+								<li
+									v-bind:class="['ph2 lh-copy pv1 f7 ba bl-0 bt-0 br-0 b--dotted b--black-30', {'bg-yellow': (leader.displayName == player.info.displayName)}]"
+								>
 									<div class="flex justify-between">
-										<span>Jane Doe</span>
-										<span>1<sup>st</sup></span>
-									</div>
-								</li>
-								<li class="ph2 lh-copy pv1 f7 ba bl-0 bt-0 br-0 b--dotted b--black-30">
-									<div class="flex justify-between">
-										<span>John Doe</span>
-										<span>2<sup>nd</sup></span>
-									</div>
-								</li>
-								<li class="ph2 br2 lh-copy pv1 bg-yellow black f7 ba bl-0 bt-0 br-0 b--dotted b--black-30">
-									<div class="flex justify-between">
-										<span>YOU</span>
-										<span>342</span>
+										<span>{{ leader.displayName }} [{{ leader.chips }}]</span>
+										<span>{{ leader.rank }}</span>
 									</div>
 								</li>
 							</ul>
@@ -191,6 +182,7 @@
 		<script src="/dist/js/firebase-cred.js"></script>
 		<script>
 			firebase.initializeApp(firebaseConfig);
+			var FIRESTORE = firebase.firestore();
 		</script>
 
 		<!-- JS -->
