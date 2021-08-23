@@ -29,13 +29,17 @@ app.listen(port, () => {
 
 	// JS Compressor
 	watcher("web/src/js", { recursive: true }, function () {
-		compressor.minify({
-			compressor: "gcc",
-			input: "./web/src/js/**/*.js",
-			output: "./web/dist/js/blackjack.js",
-			callback: function () {
-				console.log("-> JS Compressed");
-			},
-		});
+		compressor
+			.minify({
+				compressor: "gcc",
+				input: "./web/src/js/**/*.js",
+				output: "./web/dist/js/blackjack.js",
+				callback: function () {
+					console.log("-> JS Compressed");
+				},
+			})
+			.catch((e) => {
+				console.error(e);
+			});
 	});
 });
