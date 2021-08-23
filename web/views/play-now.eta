@@ -65,9 +65,9 @@
 				<!-- Dealer Cards -->
 				<div class="flex items-center justify-center">
 					<div class="mr5 bb bw2 b--white white pa2 b f3" v-if="state !== 'new-game' && get_total(hands.dealer, false) > 0">
-						{{ get_total(hands.dealer, false) }}
+						{{ this.totals.dealer }}
 					</div>
-					<div class="pl3" v-if="hands.dealer.length > 0" v-for="card in hands.dealer">
+					<div class="pl3" v-if="state !== 'new-game' && hands.dealer.length > 0" v-for="card in hands.dealer">
 						<c-card v-bind:details="card"></c-card>
 					</div>
 					<div v-if="hands.dealer.length == 0">
@@ -85,7 +85,7 @@
 					<!-- Players Cards -->
 					<div class="w-100 flex pa3 items-center justify-center">
 						<div class="mr5 bb bw2 b--white white pa2 b f3" v-if="state !== 'new-game' && get_total(hands.player) > 0">
-							{{ get_total(hands.player) }}
+							{{ this.totals.player }}
 						</div>
 						<div class="pl3" v-for="card in hands.player">
 							<c-card v-bind:details="card"></c-card>

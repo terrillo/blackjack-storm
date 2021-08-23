@@ -28,6 +28,10 @@ if (document.getElementById("view--gameboard") !== null) {
 				dealer: [],
 				player: [],
 			},
+			totals: {
+				player: 0,
+				dealer: 0,
+			},
 			template: {
 				card: {
 					value: 0,
@@ -91,34 +95,33 @@ if (document.getElementById("view--gameboard") !== null) {
 				this.delay_interval = default_interval;
 			},
 			deck: function (old_value, new_value) {
-				var player_total = this.get_total(this.hands.player);
-				var dealer_total = this.get_total(this.hands.dealer);
+				this.totals.player = this.get_total(this.hands.player);
+				this.totals.dealer = this.get_total(this.hands.dealer);
 
-				if (player_total > 21) {
+				if (this.totals.player > 21) {
 					this.message = "Player BUST!";
 					this.state = "end-game";
+					this.end_turn();
 				}
 
-				if (dealer_total > 21) {
+				if (this.totals.dealer > 21) {
 					this.message = "Dealer BUST!";
-					this.state = "end-game";
 					this.transaction("+", 2);
+					this.end_turn();
 				}
 
-				if (player_total == 21) {
-					this.message = "Player has 21!";
+				if (this.totals.player == 21) {
+					this.message = "Blackjack!!";
 					this.transaction("+", 4);
-				}
-
-				if (dealer_total == 21) {
-					this.hands.dealer.map((card) => {
-						card.flipped = true;
-					});
-					this.message = "Dealer has 21!";
+					this.end_turn();
 				}
 			},
 		},
 		methods: {
+			end_turn: function () {
+				this.state = "end-game";
+				this.clean_up();
+			},
 			buld_deck: function () {
 				// Build Deck
 				var base_cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
@@ -140,39 +143,43 @@ if (document.getElementById("view--gameboard") !== null) {
 				this.deck = _.shuffle(this.deck);
 			},
 			deal_cards: function () {
-				this.state = "dealing";
-				this.message = "Dealing cards";
-
-				// Dealer
 				this.hands.dealer = [];
-				this.delay(() => {
-					this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, true));
-				});
-				this.delay(() => (this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, false))));
-
-				// Player
 				this.hands.player = [];
-				this.delay(() => (this.hands.player = this.hands.player.concat(this.pull_cards(1, true))));
-				this.delay(() => {
-					this.hands.player = this.hands.player.concat(this.pull_cards(1, true));
+
+				setTimeout(() => {
+					this.state = "dealing";
+					this.message = "Dealing cards";
+
+					// Dealer
+					this.pull_cards("dealer", true);
+					this.pull_cards("dealer", false);
+
+					// Player
+					this.pull_cards("player", true);
+					this.pull_cards("player", true);
+
 					this.state = "player-turn";
 					this.message = "Your Move";
-				});
 
-				// Take Bet
-				this.transaction("-");
+					// Take Bet
+					this.transaction("-");
+				}, 200);
 			},
-			pull_cards: function (count, flipped) {
-				const drawn_cards = _.take(this.deck, count);
+			pull_cards: function (player, flipped) {
+				const drawn_cards = _.take(this.deck, 1);
 				drawn_cards.map((card) => {
 					card.flipped = flipped;
 				});
-				this.deck = _.drop(this.deck, count);
-				return drawn_cards;
+				if (player == "dealer") {
+					this.hands.dealer = this.hands.dealer.concat(drawn_cards);
+				} else {
+					this.hands.player = this.hands.player.concat(drawn_cards);
+				}
+				this.deck = _.drop(this.deck, 1);
 			},
 			action_hit: function () {
 				// TODO: Disable double down
-				this.hands.player = this.hands.player.concat(this.pull_cards(1, true));
+				this.pull_cards("player", true);
 			},
 			action_stand: function () {
 				this.dealer_move();
@@ -193,20 +200,23 @@ if (document.getElementById("view--gameboard") !== null) {
 			},
 			dealer_move: function () {
 				this.delay_interval = default_interval;
-				if (this.state !== "end-game") {
-					this.hands.dealer.map((card) => {
-						card.flipped = true;
-					});
+				this.hands.dealer.map((card) => {
+					card.flipped = true;
+				});
+				this.totals.dealer = this.get_total(this.hands.dealer);
 
-					var total = this.get_total(this.hands.dealer);
-					for (var i = 0; i < 10; i++) {
-						setTimeout(() => {
-							total = this.get_total(this.hands.dealer);
-							if (total < 17 && total < 21) {
-								this.hands.dealer = this.hands.dealer.concat(this.pull_cards(1, true));
-								i++;
-							}
-						}, 200);
+				var total;
+				for (var i = 0; i < 10; i++) {
+					if (this.state !== "end-game") {
+						console.log(this.state);
+						total = this.get_total(this.hands.dealer);
+						console.log(total);
+						if (total <= 17 && total < 21) {
+							console.log("PULL");
+							this.pull_cards("dealer", true);
+							this.totals.dealer = this.get_total(this.hands.dealer);
+							i++;
+						}
 					}
 					this.find_winner();
 					this.clean_up();
@@ -232,10 +242,6 @@ if (document.getElementById("view--gameboard") !== null) {
 
 				// Player Rewarded
 				this.table.rewarded = false;
-
-				// Return cards to Deck
-				this.deck = this.deck.concat(this.hands.dealer);
-				this.deck = this.deck.concat(this.hands.player);
 			},
 			find_winner: function () {
 				this.state = "end-game";
@@ -259,12 +265,12 @@ if (document.getElementById("view--gameboard") !== null) {
 					return;
 				}
 			},
-			get_total: function (cards, not_flipped = true) {
+			get_total: function (cards) {
 				var total_value = 0;
 				var number_of_aces = 0;
 
 				cards.forEach((card) => {
-					if (!card.flipped && !not_flipped) {
+					if (!card.flipped) {
 						return;
 					}
 

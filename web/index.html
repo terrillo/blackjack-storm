@@ -76,14 +76,6 @@
 								<span class="ttu">Demerits</span>
 								<span class="b">{{ player.demerits }} <i class="icon theme-color-demerit ri-scan-line"></i></span>
 							</div>
-							<!-- <dl class="lh-title pa3 mt0">
-								<dt class="f6 b">Chips</dt>
-								<dd class="ml0">{{ player.chips }}</dd>
-								<dt class="f6 b mt2">Demerits</dt>
-								<dd class="ml0">{{ player.demerits }}</dd>
-								<dt class="f6 b mt2">Current Bet</dt>
-								<dd class="ml0">{{ table.bet }}</dd>
-							</dl> -->
 							<label class="f7 ttu b mt3 mb2 db">Pay Back Demerit</label>
 							<button class="w-100" v-on:click="action_payback()">200 <i class="icon theme-color-coin ri-copper-coin-line"></i></button>
 						</div>
@@ -105,7 +97,7 @@
 								{{ get_total(hands.dealer, false) }}
 							</div>
 							<div class="pl3" v-if="hands.dealer.length > 0" v-for="card in hands.dealer">
-								<c-card v-bind:details="card"></c-card>
+								<span>{{ card.value }}</span>
 							</div>
 							<div v-if="hands.dealer.length == 0">
 								<div class="flex">
