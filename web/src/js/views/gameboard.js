@@ -205,22 +205,17 @@ if (document.getElementById("view--gameboard") !== null) {
 				});
 				this.totals.dealer = this.get_total(this.hands.dealer);
 
-				var total;
 				for (var i = 0; i < 10; i++) {
 					if (this.state !== "end-game") {
-						console.log(this.state);
-						total = this.get_total(this.hands.dealer);
-						console.log(total);
-						if (total <= 17 && total < 21) {
-							console.log("PULL");
+						if (this.totals.dealer <= 17 && this.totals.dealer < 21) {
 							this.pull_cards("dealer", true);
 							this.totals.dealer = this.get_total(this.hands.dealer);
 							i++;
 						}
 					}
-					this.find_winner();
-					this.clean_up();
 				}
+				this.find_winner();
+				this.clean_up();
 			},
 			clean_up: function () {
 				// Player Need Chips
