@@ -1,42 +1,17 @@
 <%~ includeFile("./partials/header.eta") %>
 
-<header id="view--auth">
-	<div v-if="info">
-		<button v-on:click="sign_out">Sign Out</button>
-	</div>
+<!-- Auth -->
+<div class="fixed pa3 bottom-0 right-0">
+	<%~ includeFile("./partials/auth.eta") %>
+</div>
 
-	<div v-if="!info">
-		<button v-on:click="modal('sign-up')">Sign Up</button>
-		<button v-on:click="modal('log-in')">Log In</button>
-	</div>
-
-	<div v-if="view" class="fixed top-0 right-0 left-0 bottom-0 bg-black-50 z-9999">
-		<div class="bg-white w-100 mw6 center pa3 br3 mt3">
-			<div v-if="view == 'sign-up'">
-				<h1>Sign Up</h1>
-				<input v-model="username" type="text" placeholder="jane2021" />
-				<input v-model="email" type="email" placeholder="jane@gmail.com" />
-				<input v-model="password" type="password" />
-				<button v-on:click="sign_up()">Next</button>
-				<button v-on:click="modal(false)">Cancel</button>
-			</div>
-			<div v-if="view == 'log-in'">
-				<h1>Log In</h1>
-				<input v-model="email" type="email" placeholder="jane@gmail.com" />
-				<input v-model="password" type="password" />
-				<button v-on:click="log_in()">Next</button>
-				<button v-on:click="modal(false)">Cancel</button>
-			</div>
-			<span v-if="error" class="b red" v-text="error"></span>
-		</div>
-	</div>
-</header>
 <div id="view--gameboard" class="theme-background h-100 flex flex-column items-stretch">
+	
 	<div class="flex w-100 h-100">
 		<!-- Sidebar -->
-		<div class="sidebar flex flex-column pa3 ml3">
+		<div class="sidebar flex flex-column pa3">
 			<!-- Leaderboard -->
-			<div class="w-100 pt3">
+			<div class="w-100">
 				<div class="bg-white ph2 pv3 br3">
 					<h3 class="pa0 ma0 mb1">Leaderboard</h3>
 					<ul class="list pl0 measure center ma0" v-for="leader in leaderboard">
@@ -63,16 +38,10 @@
 						<span class="ttu">Demerits</span>
 						<span class="b">{{ player.demerits }} <i class="icon theme-color-demerit ri-scan-line"></i></span>
 					</div>
-					<!-- <dl class="lh-title pa3 mt0">
-						<dt class="f6 b">Chips</dt>
-						<dd class="ml0">{{ player.chips }}</dd>
-						<dt class="f6 b mt2">Demerits</dt>
-						<dd class="ml0">{{ player.demerits }}</dd>
-						<dt class="f6 b mt2">Current Bet</dt>
-						<dd class="ml0">{{ table.bet }}</dd>
-					</dl> -->
-					<label class="f7 ttu b mt3 mb2 db">Pay Back Demerit</label>
-					<button class="w-100" v-on:click="action_payback()">200 <i class="icon theme-color-coin ri-copper-coin-line"></i></button>
+					<div v-if="player.demerits > 1 && player.chips > 200">
+						<label class="f7 ttu b mt4 mb2 db">Pay Back Demerit</label>
+						<button class="btn btn-small w-100" v-on:click="action_payback()">200 <i class="icon theme-color-coin ri-copper-coin-line"></i></button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -80,6 +49,13 @@
 
 		<!-- Gameboard -->
 		<div class="w-100 pa3 flex flex-column">
+			
+			<!-- Payout -->
+			<div v-if="table.payout" class="winings-area fixed bottom-0 right-0 mb5 br3 mr3 ph4 pv2 z-999 tc bg-black-20 white">
+				<span v-if="table.payout > 0" class="green" v-text="table.payout"></span>
+				<span v-if="table.payout < 0" class="red" v-text="table.payout"></span>		
+			</div>
+			
 			<div class="w-100 pa3 flex justify-center flex-column">
 				<!-- Messaging -->
 				<div class="mb2 tc">
@@ -103,50 +79,56 @@
 				</div>
 			</div>
 
-			<div class="w-100 pa3 flex justify-center flex-column">
-				<!-- Players Cards -->
-				<div class="w-100 flex pa3 items-center justify-center">
-					<div class="mr5 bb bw2 b--white white pa2 b f3" v-if="state !== 'new-game' && get_total(hands.player) > 0">
-						{{ get_total(hands.player) }}
-					</div>
-					<div class="pl3" v-if="hands.player.length > 0" v-for="card in hands.player">
-						<c-card v-bind:details="card"></c-card>
-					</div>
-					<div v-if="hands.player.length == 0">
-						<div class="flex">
-							<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
-							<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+			<div class="w-100 pa3">
+					
+				<div class="flex justify-center flex-column">
+					<!-- Players Cards -->
+					<div class="w-100 flex pa3 items-center justify-center">
+						<div class="mr5 bb bw2 b--white white pa2 b f3" v-if="state !== 'new-game' && get_total(hands.player) > 0">
+							{{ get_total(hands.player) }}
+						</div>
+						<div class="pl3" v-for="card in hands.player">
+							<c-card v-bind:details="card"></c-card>
+						</div>
+						<div v-if="hands.player.length == 0">
+							<div class="flex">
+								<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+								<div class="ph2 pt2 ba bw1 b--white-20 mr2 playing-card tpl"></div>
+							</div>
 						</div>
 					</div>
 				</div>
 
 				<!-- Player Action -->
 				<div class="mt2 tc" v-if="player.info">
-					<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</div>
-					<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</div>
-					<div class="dib mv2 bg-white black ph3 pv2" v-if="state == 'player-turn'" v-on:click="action_doubledown()">DOUBLE DOWN</div>
-
-					<div v-if="state == 'new-game' || state == 'end-game'">
-						<div class="br2 bg-white-10 w-auto pa3 dib">
-							<div class="white">
-								<span>{{ table.bet }} <i class="icon theme-color-coin ri-copper-coin-line"></i></span>
-							</div>
-							<div class="flex justify-center">
-								<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 100" v-on:click="bet_up(100)">+100</div>
-								<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 10" v-on:click="bet_up(10)">+10</div>
-								<div class="dib mv2 bg-white black ph3 pv2" v-on:click="bet_up(1)">+1</div>
-								<div class="dib mv2 bg-white black ph3 pv2" v-on:click="bet_down(1)">-1</div>
-								<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 10" v-on:click="bet_down(10)">-10</div>
-								<div class="dib mv2 bg-white black ph3 pv2" v-if="player.chips > 100" v-on:click="bet_down(100)">-100</div>
-							</div>
-						</div>
-						<br clear="all" />
-						<div class="dib mv2 bg-white black ph3 pv2" v-on:click="deal_cards()">NEW HAND</div>
-					</div>
+					<div class="btn" v-if="state == 'player-turn'" v-on:click="action_hit()">HIT</div>
+					<div class="btn" v-if="state == 'player-turn'" v-on:click="action_stand()">STAND</div>
+					<div class="btn" v-if="state == 'player-turn'" v-on:click="action_doubledown()">DOUBLE DOWN</div>
+					<div class="btn" v-if="state == 'new-game' || state == 'end-game'" v-on:click="deal_cards()">NEW HAND</div>
+						
 				</div>
 			</div>
+			
 		</div>
 		<!-- /Gameboard -->
+		
+		<!-- Betting -->
+		<div class="ph3 sidebar">
+			<div class="br3 mt3 bg-black-30 mw5 right-0 pa3 db">
+				<div class="white">
+					<span class="pv2 db">Current Bet: {{ table.bet }} <i class="icon theme-color-coin ri-copper-coin-line"></i></span>
+				</div>
+				<div v-if="state == 'new-game' || state == 'end-game'" class="betting-group flex flex-wrap justify-between">
+					<div class="btn btn-small" v-if="player.chips > 100" v-on:click="bet_up(100)">+100</div>
+					<div class="btn btn-small" v-if="player.chips > 10" v-on:click="bet_up(10)">+10</div>
+					<div class="btn btn-small" v-on:click="bet_up(1)">+1</div>
+					<div class="btn btn-small" v-on:click="bet_down(1)">-1</div>
+					<div class="btn btn-small" v-if="player.chips > 10" v-on:click="bet_down(10)">-10</div>
+					<div class="btn btn-small" v-if="player.chips > 100" v-on:click="bet_down(100)">-100</div>
+				</div>
+			</div>
+			<br clear="all" />
+		</div>
 	</div>
 </div>
 
@@ -162,19 +144,4 @@
 	</div>
 </script>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
-<script src="/dist/js/firebase-cred.js"></script>
-<script>
-	firebase.initializeApp(firebaseConfig);
-	var FIRESTORE = firebase.firestore();
-</script>
-
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-<script src="/dist/js/blackjack.js"></script>
-	
 <%~ includeFile("./partials/footer.eta") %>

@@ -1,2 +1,17 @@
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+<script src="/dist/js/firebase-cred.js"></script>
+<script>
+	firebase.initializeApp(firebaseConfig);
+	var FIRESTORE = firebase.firestore();
+</script>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<script src="/dist/js/blackjack.js"></script>
+	
 </body>
 </html>
