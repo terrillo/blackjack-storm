@@ -1,7 +1,19 @@
 <%~ includeFile("./partials/header.eta") %>
 
-<body>
-	<h1>Welcome to Blackjack Storm</h1>
+<body class="pa5">
+	<div class="flex pv4">
+		<div class="w-50 pv4 bg-white">
+			<div class="pa5 pt4">
+				<h1>Blackjack Storm</h1>
+				<p class="measure lh-copy">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+				<button class="btn">Log In</button>
+				<button class="btn">Sign Up</button>
+			</div>
+		</div>
+		<div class="w-50 relative theme-background">
+			<img class="absolute bottom-0 left-0 right-0 w-80 center" src="/dist/images/cards2.png" />
+		</div>
+	</div>
 </body>
 
 <%~ includeFile("./partials/footer.eta") %>

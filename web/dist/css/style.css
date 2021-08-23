@@ -21,10 +21,17 @@ Elements
 **/
 body {
 	font-family: "Roboto", sans-serif;
+	background: #f0f0f0;
 }
 
 header {
 	height: 45px;
+}
+
+.marketing-background {
+	background: #000 url(/dist/images/op3.jpg);
+	background-size: cover;
+	background-position: center;
 }
 
 .sidebar {
