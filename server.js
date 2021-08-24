@@ -5,7 +5,8 @@ const eta = require("eta");
 const path = require("path");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+const dev_mode = process.env.DEV || 0;
 
 app.engine("eta", eta.renderFile);
 app.set("view engine", "eta");
@@ -28,18 +29,20 @@ app.listen(port, () => {
 	console.log(`Blackjack Storm Ready PORT -> ${port}`);
 
 	// JS Compressor
-	watcher("web/src/js", { recursive: true }, function () {
-		compressor
-			.minify({
-				compressor: "gcc",
-				input: "./web/src/js/**/*.js",
-				output: "./web/dist/js/blackjack.js",
-				callback: function () {
-					console.log("-> JS Compressed");
-				},
-			})
-			.catch((e) => {
-				console.error(e);
-			});
-	});
+	if (dev_mode == 1) {
+		watcher("web/src/js", { recursive: true }, function () {
+			compressor
+				.minify({
+					compressor: "gcc",
+					input: "./web/src/js/**/*.js",
+					output: "./web/dist/js/blackjack.js",
+					callback: function () {
+						console.log("-> JS Compressed");
+					},
+				})
+				.catch((e) => {
+					console.error(e);
+				});
+		});
+	}
 });
